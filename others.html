@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Others</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- AOS CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div id="sidebar">
+            <div class="sidebar-header d-flex justify-content-between align-items-center">
+                <a class="navbar-brand d-flex align-items-center" href="#">
+                    <img src="image/WhatsApp Image 2025-04-04 at 20.54.54_e4502886.jpg" class="circle-logo" alt="Logo">
+                    <span class="sidebar-brand-text">Annisa NJ</span>
+                </a>
+                <button class="sidebar-toggle" id="sidebarCollapse">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+            </div>
+            
+            <ul class="nav flex-column mt-3">
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="index.html">
+                        <i class="bi bi-house-door me-2"></i>
+                        <span class="sidebar-item-text">Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="gallery.html">
+                        <i class="bi bi-images me-2"></i>
+                        <span class="sidebar-item-text">Gallery</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="others.html">
+                        <i class="bi bi-music-note-list me-2"></i>
+                        <span class="sidebar-item-text">Music</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Main Content -->
+        <div id="content">
+            <div class="music-container">
+                <h1 class="music-title">MUSIC PLAYLIST</h1>
+                
+                <div class="player-container" data-aos="fade-up">
+                    <div class="music-player">
+                        <div class="album-cover">
+                            <i class="bi bi-music-note-beamed"></i>
+                        </div>
+                        <div class="player-controls">
+                            <div class="song-info">
+                                <h5 class="song-title">Select a song</h5>
+                                <p class="artist">-</p>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar"></div>
+                                <div class="time-info">
+                                    <span class="current-time">0:00</span>
+                                    <span class="duration">0:00</span>
+                                </div>
+                            </div>
+                            <div class="controls">
+                                <button class="control-btn" id="prev-btn"><i class="bi bi-skip-start-fill"></i></button>
+                                <button class="control-btn play-btn" id="play-btn"><i class="bi bi-play-fill"></i></button>
+                                <button class="control-btn" id="next-btn"><i class="bi bi-skip-end-fill"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Hidden audio element -->
+                    <audio id="audio-player"></audio>
+                </div>
+                
+                <div class="playlist-container">
+                    <div class="playlist-header">
+                        <span>#</span>
+                        <span>TITLE</span>
+                        <span><i class="bi bi-clock"></i></span>
+                    </div>
+                    <div class="playlist">
+                        <!-- Song 1 -->
+                       <div class="playlist-item" data-src="LANY - you! (Lyrics).mp3" data-duration="4:34">
+                            <div class="item-number">1</div>
+                            <div class="item-info">
+                                <div class="item-title">Lany</div>
+                                <div class="item-artist">YOU!</div>
+                            </div>
+                            <div class="item-duration">2:58</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+        
+        // Sidebar toggle functionality
+        document.getElementById('sidebarCollapse').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+            const icon = this.querySelector('i');
+            
+            sidebar.classList.toggle('collapsed');
+            content.classList.toggle('expanded');
+            
+            if (sidebar.classList.contains('collapsed')) {
+                icon.classList.remove('bi-chevron-left');
+                icon.classList.add('bi-chevron-right');
+            } else {
+                icon.classList.remove('bi-chevron-right');
+                icon.classList.add('bi-chevron-left');
+            }
+        });
+
+        // Music player functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const audioPlayer = document.getElementById('audio-player');
+            const playBtn = document.getElementById('play-btn');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const playlistItems = document.querySelectorAll('.playlist-item');
+            const progressBar = document.querySelector('.progress-bar');
+            const currentTimeDisplay = document.querySelector('.current-time');
+            const durationDisplay = document.querySelector('.duration');
+            
+            let currentSongIndex = -1;
+            let isPlaying = false;
+            
+            // Format time from seconds to MM:SS
+            function formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            }
+            
+            // Update progress bar and time
+            function updateProgress() {
+                const { currentTime, duration } = audioPlayer;
+                const progressPercent = (currentTime / duration) * 100;
+                progressBar.style.width = `${progressPercent}%`;
+                currentTimeDisplay.textContent = formatTime(currentTime);
+                
+                // Update duration if it's available
+                if (duration) {
+                    durationDisplay.textContent = formatTime(duration);
+                }
+            }
+            
+            // Set progress when clicked on progress bar
+            function setProgress(e) {
+                const width = this.clientWidth;
+                const clickX = e.offsetX;
+                const duration = audioPlayer.duration;
+                audioPlayer.currentTime = (clickX / width) * duration;
+            }
+            
+            // Play song
+            function playSong() {
+                audioPlayer.play();
+                isPlaying = true;
+                playBtn.innerHTML = '<i class="bi bi-pause-fill"></i>';
+            }
+            
+            // Pause song
+            function pauseSong() {
+                audioPlayer.pause();
+                isPlaying = false;
+                playBtn.innerHTML = '<i class="bi bi-play-fill"></i>';
+            }
+            
+            // Load and play song
+            function loadSong(index) {
+                const song = playlistItems[index];
+                const songSrc = song.getAttribute('data-src');
+                const songTitle = song.querySelector('.item-title').textContent;
+                const songArtist = song.querySelector('.item-artist').textContent;
+                const songDuration = song.getAttribute('data-duration');
+                
+                audioPlayer.src = songSrc;
+                document.querySelector('.song-title').textContent = songTitle;
+                document.querySelector('.artist').textContent = songArtist;
+                durationDisplay.textContent = songDuration;
+                
+                playlistItems.forEach(item => item.classList.remove('active'));
+                song.classList.add('active');
+                
+                currentSongIndex = index;
+                
+                // Auto-play if a song was already playing
+                if (isPlaying) {
+                    audioPlayer.oncanplay = function() {
+                        playSong();
+                        audioPlayer.oncanplay = null;
+                    };
+                }
+            }
+            
+            // Play next song
+            function nextSong() {
+                currentSongIndex = (currentSongIndex + 1) % playlistItems.length;
+                loadSong(currentSongIndex);
+                if (isPlaying) playSong();
+            }
+            
+            // Play previous song
+            function prevSong() {
+                currentSongIndex = (currentSongIndex - 1 + playlistItems.length) % playlistItems.length;
+                loadSong(currentSongIndex);
+                if (isPlaying) playSong();
+            }
+            
+            // Event listeners
+            playBtn.addEventListener('click', function() {
+                if (currentSongIndex === -1) {
+                    // If no song is selected, start with the first one
+                    loadSong(0);
+                    playSong();
+                } else {
+                    isPlaying ? pauseSong() : playSong();
+                }
+            });
+            
+            prevBtn.addEventListener('click', prevSong);
+            nextBtn.addEventListener('click', nextSong);
+            
+            // Click on playlist item
+            playlistItems.forEach((item, index) => {
+                item.addEventListener('click', function() {
+                    loadSong(index);
+                    playSong();
+                });
+            });
+            
+            // Progress bar click
+            document.querySelector('.progress-container').addEventListener('click', setProgress);
+            
+            // Time update
+            audioPlayer.addEventListener('timeupdate', updateProgress);
+            
+            // Song ended
+            audioPlayer.addEventListener('ended', nextSong);
+            
+            // Load first song (but don't play automatically)
+            if (playlistItems.length > 0) {
+                loadSong(0);
+            }
+        });
+    </script>
+</body>
+</html>
